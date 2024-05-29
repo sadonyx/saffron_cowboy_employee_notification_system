@@ -1,4 +1,4 @@
-import Event from './classes/Event';
+import Event from '../classes/Event';
 
 const messageHTML = (event: Event):string => {
 return `<p>Hello ${event.employeeName},</p>
