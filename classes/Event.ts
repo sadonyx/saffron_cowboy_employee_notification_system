@@ -80,7 +80,7 @@ export default class Event {
     // NOTE : when initializing a new RegExp object, we have to also escape slashes!
     let regex: RegExp = new RegExp('((^\\d{1,2}:\\d{2})|(^\\d{1,2}))|(am(?=\\s)|pm(?=\\s))|(am|pm)|((\\d{1,2}:\\d{2})|(\\d{1,2}))', 'gm');
 
-    let timeString: string = row.get('Time').trim();
+    let timeString: string = row.get('Time')?.trim();
 
     if (timeString) {
       let timeArr: RegExpMatchArray | null = timeString.match(regex);
@@ -93,8 +93,8 @@ export default class Event {
   }
 
   getLocation = (row: Row): void => {
-    let locationNameString: string = row.get('Where').trim();
-    let addressString: string = row.get('Address').trim();
+    let locationNameString: string = row.get('Where')?.trim();
+    let addressString: string = row.get('Address')?.trim();
 
     this.location = {
       name: locationNameString,
@@ -103,19 +103,19 @@ export default class Event {
   }
 
   getServices = (row: Row): void => {
-    let servicesString = row.get('What').trim();
+    let servicesString = row.get('What')?.trim();
 
     this.services = servicesString;
   }
 
   getEventName = (row: Row): void => {
-    let eventString: string = row.get('Who + What').trim();
+    let eventString: string = row.get('Who + What')?.trim();
 
     this.eventName = eventString;
   }
 
   getEmployeeInfo = (row: Row): void => {
-    let employeeNameString: string = row.get('Who').trim();
+    let employeeNameString: string = row.get('Who')?.trim();
 
     this.employeeName = employeeNameString;
     this.employeeEmail = EMPLOYEE_CONTACT[employeeNameString];

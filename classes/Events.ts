@@ -6,12 +6,13 @@ type Row = GoogleSpreadsheetRow<Record<string, any>>;
 
 export default class Events {
   upcomingEvents: Array<Event>;
+  length: number;
 
   constructor(rows: Rows) {
     this.upcomingEvents = [];
-
     this.getEvents(rows);
-    // console.log(this.events);
+    this.length = this.upcomingEvents.length;
+
   }
 
   getEvents(rows: Rows): void {
