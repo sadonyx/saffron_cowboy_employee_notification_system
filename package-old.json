@@ -3,23 +3,23 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js", 
+    "start": "ts-node server.ts",  
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/jsonwebtoken": "^8.5.0",
-    "dotenv": "^8.2.0",
-    "esrun": "^2.0.0",  
-    "google-auth-library": "^5.10.1",
-    "google-spreadsheet": "^3.1.15",
-    "nodemailer": "^6.4.18"
+    "@types/jsonwebtoken": "^8.5.0",    
+    "dotenv": "^8.2.0",                 
+    "esrun": "^1.0.0",                  
+    "google-auth-library": "^5.10.1",   
+    "google-spreadsheet": "^3.1.15",    
+    "nodemailer": "^6.4.18"             
   },
   "devDependencies": {
-    "@types/node": "^11.15.55",
-    "@types/nodemailer": "^6.4.0",
-    "typescript": "^3.9.10"
+    "@types/node": "^11.15.55",         
+    "@types/nodemailer": "^6.4.0",      
+    "typescript": "^3.9.10"             
   },
   "keywords": [],
   "description": ""
