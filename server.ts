@@ -36,6 +36,7 @@ setInterval(triggerEvents, milliToDay);
 // load sheet info
 async function triggerEvents() {
   currentDate = new Date(Date.now()); // update current date
+  console.log("Server reset. Current date:", currentDate); // display confirmation of server reset each day
   doc.resetLocalCache(); // reset cached info of previous loadInfo call
   await doc.loadInfo(); // get all info of the spreadsheet
   let sheet = doc.sheetsByTitle[sheetTitle];
@@ -43,7 +44,6 @@ async function triggerEvents() {
   await sheet.getRows(getOffsetLimit(sheet))
              .then((rows) => {
                let events: Events = new Events(rows);
-               console.log(events.length);
                checkEvents(events);
              });
 };
@@ -68,7 +68,7 @@ function checkEvents(events: Events) {
 function timeToSendNotif(currentDate: Date, targetDate: Date | undefined): boolean {
   if (typeof targetDate !== 'undefined') {
     // find the difference (in days) between the two dates
-    let difference: number = Math.floor((targetDate.getTime() - currentDate.getTime()) / milliToDay);
+    let difference: number = Math.ceil((targetDate.getTime() - currentDate.getTime()) / milliToDay);
     return difference === 2;
   } else {
     return false;
@@ -76,27 +76,33 @@ function timeToSendNotif(currentDate: Date, targetDate: Date | undefined): boole
 }
 
 function sendNotification(event: Event) {
-  // configure mail options (recipient, sender, subject, html body)
-  let mailOptions: mailOptions = buildMailOptions(event);
+  // configure array of mail options ([{recipient, sender, subject, html body}, ...])
+  let mailOptionsArr: Array<mailOptions> = buildMailOptions(event);
 
-  // Send the email
-  transporter.sendMail(mailOptions, function(error: Error | null, info: SentMessageInfo):void {
-    if (error) {
-      console.log('Error:', error);
-    } else {
-      console.log('Email sent:', info.response);
-    }
-  });
+  // Send the email(s)
+  mailOptionsArr.forEach((mailOptions) => {
+    transporter.sendMail(mailOptions, function(error: Error | null, info: SentMessageInfo):void {
+      if (error) {
+        console.log('Error:', error);
+      } else {
+        console.log('Email sent:', info.response);
+      }
+    });
+  })
 }
 
-// configure mailOptions using Event properties
-function buildMailOptions(event: Event): mailOptions {
-  return {
-    from: 'notifications@saffroncowboy.com',
-    to: event.employeeEmail,
-    subject: generateSubjectLine(event),
-    html: messageHTML(event),
-  }
+// configure mailOptions using Event properties; we use an array incase there are multiple recipients
+function buildMailOptions(event: Event): Array<mailOptions> {
+  let mailOptionsArr: Array<mailOptions> = [];
+  event.employees.forEach((employee) => {
+    mailOptionsArr.push({
+      from: 'notifications@saffroncowboy.com',
+      to: employee.email,
+      subject: generateSubjectLine(event),
+      html: messageHTML(event, employee.name),
+    })
+  })
+  return mailOptionsArr;
 }
 
 // generate subject line using Event date property.
@@ -114,7 +120,7 @@ function getOffsetLimit(sheet: GoogleSpreadsheetWorksheet): offsetLimit {
   let currentMonth: string = months[currentDate.getMonth()]; // string of current month
   let nextMonth: string = months[currentDate.getMonth() + 1]; // string of next month
 
-  console.log(currentMonth, nextMonth)
+  // console.log(currentMonth, nextMonth)
 
   // Iterate through the rows from the bottom of the sheet (will reach latest months faster)
   // 'i' is the rowNumber
@@ -133,6 +139,6 @@ function getOffsetLimit(sheet: GoogleSpreadsheetWorksheet): offsetLimit {
     }
   }
 
-  limit = nextMonthIndex - offset;
+  limit = nextMonthIndex - offset - 1; // -1 since the limit is counted from the first cell
   return {offset: offset, limit: limit};
 }

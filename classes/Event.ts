@@ -27,14 +27,20 @@ type LocationObj = {
   address?: string,
 }
 
+type employeeObj = {
+  name: string,
+  email: string
+}
+
+type employeeArr = Array<employeeObj>;
+
 export default class Event {
   date: DateObj;
   startTime: string;
   endTime: string;
   eventName: string;
   location: LocationObj;
-  employeeName: string;
-  employeeEmail: string;
+  employees: employeeArr;
   services: string;
 
   constructor(row: Row) {
@@ -43,8 +49,7 @@ export default class Event {
     this.startTime = '';
     this.endTime = '';
     this.eventName = '';
-    this.employeeName = '';
-    this.employeeEmail = '';
+    this.employees = [];
     this.services = '';
 
     this.init(row);
@@ -117,8 +122,19 @@ export default class Event {
   getEmployeeInfo = (row: Row): void => {
     let employeeNameString: string = row.get('Who')?.trim();
 
-    this.employeeName = employeeNameString;
-    this.employeeEmail = EMPLOYEE_CONTACT[employeeNameString];
+    // if there are multiple names (separated by a plus sign), split them and process them individually
+    if (/[\+]*/.test(employeeNameString)) {
+      let splitNames = employeeNameString.split('+');
+      splitNames.forEach((name, i) => {
+        let trimmedName: string = name.trim() 
+        let employeeObj: employeeObj = { name: trimmedName, email: EMPLOYEE_CONTACT[trimmedName]}
+        this.employees.push(employeeObj);
+      });
+      // process the singular name
+    } else {
+      let employeeObj: employeeObj = { name: employeeNameString, email: EMPLOYEE_CONTACT[employeeNameString]}
+      this.employees.push(employeeObj);
+    }
   }
 
   eventToObject = () => {
