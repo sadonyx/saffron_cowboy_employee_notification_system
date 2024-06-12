@@ -31,10 +31,10 @@ let currentDate: Date = new Date(Date.now()); // Date object with current date (
 const doc = new GoogleSpreadsheet(config.id, serviceAccountAuth);
 
 // server is set to trigger once every day
-setInterval(triggerEvents, milliToDay);
+// setInterval(triggerEvents, milliToDay);
 
 // load sheet info
-async function triggerEvents() {
+exports.handler = async() => {
   currentDate = new Date(Date.now()); // update current date
   console.log("Server reset. Current date:", currentDate); // display confirmation of server reset each day
   doc.resetLocalCache(); // reset cached info of previous loadInfo call
